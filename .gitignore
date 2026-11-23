@@ -1,0 +1,31 @@
+# Credentials and private campaign data
+.env
+.env.*
+!.env.example
+secrets.toml
+*.pem
+*.key
+*.p12
+*.pfx
+*credentials*
+*api_keys*
+Tool Stack with API.md
+*.local.json
+*.csv
+*.tsv
+*.xlsx
+*.xls
+*.sqlite*
+*.db
+*.log
+
+# Generated artifacts and local runtimes
+/output/*
+!/output/conifer_gtm_command_center.grafana.json
+/.github-publication/
+.dashboard-venv/
+.dashboard-runtime/
+.venv/
+__pycache__/
+.pytest_cache/
+*.py[cod]

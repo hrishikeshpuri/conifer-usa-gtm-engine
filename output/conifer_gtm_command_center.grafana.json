@@ -1,0 +1,1212 @@
+{
+  "__inputs": [
+    {
+      "name": "DS_CONIFER_POSTGRES",
+      "label": "Conifer Supabase PostgreSQL",
+      "description": "Select the connected PostgreSQL data source with access to grafana_reporting.",
+      "type": "datasource",
+      "pluginId": "grafana-postgresql-datasource",
+      "pluginName": "PostgreSQL"
+    }
+  ],
+  "__requires": [
+    {
+      "type": "datasource",
+      "id": "grafana-postgresql-datasource",
+      "name": "PostgreSQL",
+      "version": "1.0.0"
+    }
+  ],
+  "title": "Conifer USA — GTM Command Center",
+  "description": "Conifer USA outbound intelligence from the five Supabase reporting views. Contact details are excluded.",
+  "uid": "conifer-usa-gtm-command-center",
+  "id": null,
+  "tags": [
+    "conifer",
+    "gtm",
+    "supabase"
+  ],
+  "style": "dark",
+  "timezone": "utc",
+  "editable": true,
+  "schemaVersion": 41,
+  "version": 1,
+  "refresh": "5m",
+  "time": {
+    "from": "now-90d",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": [
+      "5m",
+      "10m",
+      "15m",
+      "30m",
+      "1h"
+    ]
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "company",
+        "label": "Company",
+        "type": "query",
+        "datasource": {
+          "type": "grafana-postgresql-datasource",
+          "uid": "${DS_CONIFER_POSTGRES}"
+        },
+        "definition": "select c.name || ' · ' || coalesce(c.domain,c.id::text) as __text,c.id::text as __value from grafana_reporting.company_scores c order by 1",
+        "query": "select c.name || ' · ' || coalesce(c.domain,c.id::text) as __text,c.id::text as __value from grafana_reporting.company_scores c order by 1",
+        "refresh": 1,
+        "sort": 0,
+        "hide": 0,
+        "multi": true,
+        "includeAll": true,
+        "allValue": "'__all'",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "options": [],
+        "regex": "",
+        "skipUrlSync": false
+      },
+      {
+        "name": "tier",
+        "label": "Priority tier",
+        "type": "query",
+        "datasource": {
+          "type": "grafana-postgresql-datasource",
+          "uid": "${DS_CONIFER_POSTGRES}"
+        },
+        "definition": "select distinct c.priority_tier from grafana_reporting.company_scores c where nullif(c.priority_tier,'') is not null order by 1",
+        "query": "select distinct c.priority_tier from grafana_reporting.company_scores c where nullif(c.priority_tier,'') is not null order by 1",
+        "refresh": 1,
+        "sort": 0,
+        "hide": 0,
+        "multi": true,
+        "includeAll": true,
+        "allValue": "'__all'",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "options": [],
+        "regex": "",
+        "skipUrlSync": false
+      },
+      {
+        "name": "category",
+        "label": "Signal category",
+        "type": "query",
+        "datasource": {
+          "type": "grafana-postgresql-datasource",
+          "uid": "${DS_CONIFER_POSTGRES}"
+        },
+        "definition": "select distinct btrim(part.label) as category from grafana_reporting.buying_signals s cross join lateral unnest(string_to_array(s.signal_type, ';')) as part(label) where btrim(part.label) <> '' order by 1",
+        "query": "select distinct btrim(part.label) as category from grafana_reporting.buying_signals s cross join lateral unnest(string_to_array(s.signal_type, ';')) as part(label) where btrim(part.label) <> '' order by 1",
+        "refresh": 1,
+        "sort": 0,
+        "hide": 0,
+        "multi": true,
+        "includeAll": true,
+        "allValue": "'__all'",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "options": [],
+        "regex": "",
+        "skipUrlSync": false
+      },
+      {
+        "name": "campaign",
+        "label": "Campaign",
+        "type": "query",
+        "datasource": {
+          "type": "grafana-postgresql-datasource",
+          "uid": "${DS_CONIFER_POSTGRES}"
+        },
+        "definition": "select k.name as __text,k.id::text as __value from grafana_reporting.campaign_summary k order by 1",
+        "query": "select k.name as __text,k.id::text as __value from grafana_reporting.campaign_summary k order by 1",
+        "refresh": 1,
+        "sort": 0,
+        "hide": 0,
+        "multi": true,
+        "includeAll": true,
+        "allValue": "'__all'",
+        "current": {
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
+        },
+        "options": [],
+        "regex": "",
+        "skipUrlSync": false
+      }
+    ]
+  },
+  "annotations": {
+    "list": []
+  },
+  "links": [],
+  "panels": [
+    {
+      "id": 1,
+      "type": "row",
+      "title": "Executive Overview",
+      "gridPos": {
+        "x": 0,
+        "y": 0,
+        "w": 24,
+        "h": 1
+      },
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "id": 2,
+      "title": "Total companies",
+      "type": "stat",
+      "description": "Company and tier filters apply.",
+      "gridPos": {
+        "x": 0,
+        "y": 1,
+        "w": 5,
+        "h": 4
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_CONIFER_POSTGRES}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_CONIFER_POSTGRES}"
+          },
+          "editorMode": "code",
+          "rawQuery": true,
+          "rawSql": "select count(*) from grafana_reporting.company_scores c where ('__all' IN (${company:sqlstring}) OR c.id::text IN (${company:sqlstring})) and ('__all' IN (${tier:sqlstring}) OR c.priority_tier IN (${tier:sqlstring}))",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#56C5A2"
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        }
+      }
+    },
+    {
+      "id": 3,
+      "title": "Total contacts",
+      "type": "stat",
+      "description": "Company and tier filters apply.",
+      "gridPos": {
+        "x": 5,
+        "y": 1,
+        "w": 5,
+        "h": 4
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_CONIFER_POSTGRES}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_CONIFER_POSTGRES}"
+          },
+          "editorMode": "code",
+          "rawQuery": true,
+          "rawSql": "select coalesce(sum(t.contacts),0) from grafana_reporting.company_scores c left join grafana_reporting.contact_counts t on t.company_id=c.id where ('__all' IN (${company:sqlstring}) OR c.id::text IN (${company:sqlstring})) and ('__all' IN (${tier:sqlstring}) OR c.priority_tier IN (${tier:sqlstring}))",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#56C5A2"
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        }
+      }
+    },
+    {
+      "id": 4,
+      "title": "Total buying signals",
+      "type": "stat",
+      "description": "Company, tier and signal-category filters apply. Includes undated signals.",
+      "gridPos": {
+        "x": 10,
+        "y": 1,
+        "w": 5,
+        "h": 4
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_CONIFER_POSTGRES}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_CONIFER_POSTGRES}"
+          },
+          "editorMode": "code",
+          "rawQuery": true,
+          "rawSql": "select count(*) from grafana_reporting.buying_signals s join grafana_reporting.company_scores c on c.id=s.company_id where ('__all' IN (${company:sqlstring}) OR c.id::text IN (${company:sqlstring})) and ('__all' IN (${tier:sqlstring}) OR c.priority_tier IN (${tier:sqlstring})) and ('__all' IN (${category:sqlstring}) OR EXISTS (SELECT 1 FROM unnest(string_to_array(s.signal_type, ';')) AS part(label) WHERE btrim(part.label) IN (${category:sqlstring})))",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#56C5A2"
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        }
+      }
+    },
+    {
+      "id": 5,
+      "title": "Total campaigns",
+      "type": "stat",
+      "description": "Campaign filter applies.",
+      "gridPos": {
+        "x": 15,
+        "y": 1,
+        "w": 4,
+        "h": 4
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_CONIFER_POSTGRES}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_CONIFER_POSTGRES}"
+          },
+          "editorMode": "code",
+          "rawQuery": true,
+          "rawSql": "select count(*) from grafana_reporting.campaign_summary k where ('__all' IN (${campaign:sqlstring}) OR k.id::text IN (${campaign:sqlstring}))",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#56C5A2"
+          },
+          "decimals": 0
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        }
+      }
+    },
+    {
+      "id": 6,
+      "title": "Average ICP score",
+      "type": "stat",
+      "description": "Average across scored companies in the selection.",
+      "gridPos": {
+        "x": 19,
+        "y": 1,
+        "w": 5,
+        "h": 4
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_CONIFER_POSTGRES}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_CONIFER_POSTGRES}"
+          },
+          "editorMode": "code",
+          "rawQuery": true,
+          "rawSql": "select round(avg(c.icp_score),1) from grafana_reporting.company_scores c where ('__all' IN (${company:sqlstring}) OR c.id::text IN (${company:sqlstring})) and ('__all' IN (${tier:sqlstring}) OR c.priority_tier IN (${tier:sqlstring}))",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#56C5A2"
+          },
+          "decimals": 1,
+          "noValue": "No scores"
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        }
+      }
+    },
+    {
+      "id": 7,
+      "type": "row",
+      "title": "ICP Qualification",
+      "gridPos": {
+        "x": 0,
+        "y": 5,
+        "w": 24,
+        "h": 1
+      },
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "id": 8,
+      "title": "ICP score distribution",
+      "type": "barchart",
+      "description": "Scored companies grouped by ICP score bands.",
+      "gridPos": {
+        "x": 0,
+        "y": 6,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_CONIFER_POSTGRES}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_CONIFER_POSTGRES}"
+          },
+          "editorMode": "code",
+          "rawQuery": true,
+          "rawSql": "select case when c.icp_score <60 then 'Below 60' when c.icp_score <80 then '60–79' else '80–100' end as \"ICP score\", count(*) as \"Companies\" from grafana_reporting.company_scores c where ('__all' IN (${company:sqlstring}) OR c.id::text IN (${company:sqlstring})) and ('__all' IN (${tier:sqlstring}) OR c.priority_tier IN (${tier:sqlstring})) and c.icp_score is not null group by 1 order by min(c.icp_score)",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#56C5A2"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "auto",
+        "showValue": "auto",
+        "legend": {
+          "showLegend": false
+        }
+      }
+    },
+    {
+      "id": 9,
+      "title": "Companies by priority tier",
+      "type": "barchart",
+      "description": "",
+      "gridPos": {
+        "x": 8,
+        "y": 6,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_CONIFER_POSTGRES}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_CONIFER_POSTGRES}"
+          },
+          "editorMode": "code",
+          "rawQuery": true,
+          "rawSql": "select coalesce(c.priority_tier,'Unrecorded') as \"Tier\", count(*) as \"Companies\" from grafana_reporting.company_scores c where ('__all' IN (${company:sqlstring}) OR c.id::text IN (${company:sqlstring})) and ('__all' IN (${tier:sqlstring}) OR c.priority_tier IN (${tier:sqlstring})) group by 1 order by 1",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#56C5A2"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "auto",
+        "showValue": "auto",
+        "legend": {
+          "showLegend": false
+        }
+      }
+    },
+    {
+      "id": 10,
+      "title": "Qualification status",
+      "type": "piechart",
+      "description": "",
+      "gridPos": {
+        "x": 16,
+        "y": 6,
+        "w": 8,
+        "h": 8
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_CONIFER_POSTGRES}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_CONIFER_POSTGRES}"
+          },
+          "editorMode": "code",
+          "rawQuery": true,
+          "rawSql": "select coalesce(c.qualification_status,'Unrecorded') as \"Status\", count(*) as \"Companies\" from grafana_reporting.company_scores c where ('__all' IN (${company:sqlstring}) OR c.id::text IN (${company:sqlstring})) and ('__all' IN (${tier:sqlstring}) OR c.priority_tier IN (${tier:sqlstring})) group by 1 order by 2 desc",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic",
+            "fixedColor": "#56C5A2"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "pieType": "donut",
+        "displayLabels": [
+          "name",
+          "percent"
+        ],
+        "reduceOptions": {
+          "values": true,
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "legend": {
+          "showLegend": true,
+          "placement": "right",
+          "displayMode": "list"
+        }
+      }
+    },
+    {
+      "id": 11,
+      "title": "Top companies ranked by ICP score",
+      "type": "table",
+      "description": "",
+      "gridPos": {
+        "x": 0,
+        "y": 14,
+        "w": 24,
+        "h": 8
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_CONIFER_POSTGRES}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_CONIFER_POSTGRES}"
+          },
+          "editorMode": "code",
+          "rawQuery": true,
+          "rawSql": "select c.name as \"Company\", c.domain as \"Domain\", c.icp_score as \"ICP score\", c.priority_tier as \"Tier\", c.qualification_status as \"Qualification\", c.industry as \"Industry\", c.headquarters_country as \"HQ country\", c.employee_count as \"Employees\" from grafana_reporting.company_scores c where ('__all' IN (${company:sqlstring}) OR c.id::text IN (${company:sqlstring})) and ('__all' IN (${tier:sqlstring}) OR c.priority_tier IN (${tier:sqlstring})) and c.icp_score is not null order by c.icp_score desc,c.name,c.id limit 25",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#56C5A2"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "id": 12,
+      "type": "row",
+      "title": "Buying Signal Intelligence",
+      "gridPos": {
+        "x": 0,
+        "y": 22,
+        "w": 24,
+        "h": 1
+      },
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "id": 13,
+      "title": "Signals by category",
+      "type": "barchart",
+      "description": "Counts each distinct saved category once per signal. A signal can belong to multiple categories.",
+      "gridPos": {
+        "x": 0,
+        "y": 23,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_CONIFER_POSTGRES}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_CONIFER_POSTGRES}"
+          },
+          "editorMode": "code",
+          "rawQuery": true,
+          "rawSql": "select coalesce(labels.category,'Unrecorded') as \"Category\", count(*) as \"Signals\" from grafana_reporting.buying_signals s join grafana_reporting.company_scores c on c.id=s.company_id left join lateral (select distinct btrim(part.label) as category from unnest(string_to_array(s.signal_type, ';')) as part(label) where btrim(part.label) <> '') labels on true where ('__all' IN (${company:sqlstring}) OR c.id::text IN (${company:sqlstring})) and ('__all' IN (${tier:sqlstring}) OR c.priority_tier IN (${tier:sqlstring})) and ('__all' IN (${category:sqlstring}) OR EXISTS (SELECT 1 FROM unnest(string_to_array(s.signal_type, ';')) AS part(label) WHERE btrim(part.label) IN (${category:sqlstring}))) and ('__all' IN (${category:sqlstring}) OR labels.category IN (${category:sqlstring})) group by 1 order by 2 desc,1",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#56C5A2"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "showValue": "auto",
+        "legend": {
+          "showLegend": false
+        }
+      }
+    },
+    {
+      "id": 14,
+      "title": "Companies with the most signals",
+      "type": "barchart",
+      "description": "",
+      "gridPos": {
+        "x": 12,
+        "y": 23,
+        "w": 12,
+        "h": 8
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_CONIFER_POSTGRES}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_CONIFER_POSTGRES}"
+          },
+          "editorMode": "code",
+          "rawQuery": true,
+          "rawSql": "select c.name as \"Company\", count(*) as \"Signals\" from grafana_reporting.buying_signals s join grafana_reporting.company_scores c on c.id=s.company_id where ('__all' IN (${company:sqlstring}) OR c.id::text IN (${company:sqlstring})) and ('__all' IN (${tier:sqlstring}) OR c.priority_tier IN (${tier:sqlstring})) and ('__all' IN (${category:sqlstring}) OR EXISTS (SELECT 1 FROM unnest(string_to_array(s.signal_type, ';')) AS part(label) WHERE btrim(part.label) IN (${category:sqlstring}))) group by c.id,c.name order by 2 desc,1 limit 10",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#56C5A2"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "showValue": "auto",
+        "legend": {
+          "showLegend": false
+        }
+      }
+    },
+    {
+      "id": 15,
+      "title": "Recent buying signals",
+      "type": "table",
+      "description": "Uses the observation date when available and the database record date otherwise. The Observed and Recorded columns show both dates separately.",
+      "gridPos": {
+        "x": 0,
+        "y": 31,
+        "w": 24,
+        "h": 8
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_CONIFER_POSTGRES}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_CONIFER_POSTGRES}"
+          },
+          "editorMode": "code",
+          "rawQuery": true,
+          "rawSql": "select s.observed_at as \"Observed\", s.created_at as \"Recorded\", c.name as \"Company\", s.signal_type as \"Category\", s.description as \"Signal\", s.evidence_url as \"Evidence URL\" from grafana_reporting.buying_signals s join grafana_reporting.company_scores c on c.id=s.company_id cross join lateral (select coalesce(s.observed_at, s.created_at) as effective_date) signal_date where ('__all' IN (${company:sqlstring}) OR c.id::text IN (${company:sqlstring})) and ('__all' IN (${tier:sqlstring}) OR c.priority_tier IN (${tier:sqlstring})) and ('__all' IN (${category:sqlstring}) OR EXISTS (SELECT 1 FROM unnest(string_to_array(s.signal_type, ';')) AS part(label) WHERE btrim(part.label) IN (${category:sqlstring}))) and $__timeFilter(signal_date.effective_date) order by coalesce(s.observed_at, s.created_at) desc,s.id limit 25",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#56C5A2"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Evidence URL"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Open evidence",
+                    "url": "${__value.raw}",
+                    "targetBlank": true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "id": 16,
+      "title": "Signal evidence and confidence",
+      "type": "table",
+      "description": "Includes undated signals. Confidence comes directly from the reporting view.",
+      "gridPos": {
+        "x": 0,
+        "y": 39,
+        "w": 24,
+        "h": 8
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_CONIFER_POSTGRES}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_CONIFER_POSTGRES}"
+          },
+          "editorMode": "code",
+          "rawQuery": true,
+          "rawSql": "select c.name as \"Company\", s.signal_type as \"Category\", s.description as \"Evidence\", coalesce(nullif(btrim(s.evidence_confidence),''),'Unrecorded') as \"Confidence\", s.evidence_url as \"Evidence URL\", s.observed_at as \"Observed\" from grafana_reporting.buying_signals s join grafana_reporting.company_scores c on c.id=s.company_id where ('__all' IN (${company:sqlstring}) OR c.id::text IN (${company:sqlstring})) and ('__all' IN (${tier:sqlstring}) OR c.priority_tier IN (${tier:sqlstring})) and ('__all' IN (${category:sqlstring}) OR EXISTS (SELECT 1 FROM unnest(string_to_array(s.signal_type, ';')) AS part(label) WHERE btrim(part.label) IN (${category:sqlstring}))) order by s.observed_at desc nulls last,c.name,s.id",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#56C5A2"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Evidence URL"
+            },
+            "properties": [
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "title": "Open evidence",
+                    "url": "${__value.raw}",
+                    "targetBlank": true
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "id": 17,
+      "type": "row",
+      "title": "Contact Intelligence",
+      "gridPos": {
+        "x": 0,
+        "y": 47,
+        "w": 24,
+        "h": 1
+      },
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "id": 18,
+      "title": "Contact coverage by company",
+      "type": "table",
+      "description": "",
+      "gridPos": {
+        "x": 0,
+        "y": 48,
+        "w": 12,
+        "h": 9
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_CONIFER_POSTGRES}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_CONIFER_POSTGRES}"
+          },
+          "editorMode": "code",
+          "rawQuery": true,
+          "rawSql": "select c.name as \"Company\", c.domain as \"Domain\", coalesce(t.contacts,0) as \"Contacts\", coalesce(t.verified_emails,0) as \"Verified emails\" from grafana_reporting.company_scores c left join grafana_reporting.contact_counts t on t.company_id=c.id where ('__all' IN (${company:sqlstring}) OR c.id::text IN (${company:sqlstring})) and ('__all' IN (${tier:sqlstring}) OR c.priority_tier IN (${tier:sqlstring})) order by 3 desc,c.name",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#56C5A2"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "id": 19,
+      "title": "Verified email counts",
+      "type": "stat",
+      "description": "Uses the reporting view's verification definition.",
+      "gridPos": {
+        "x": 12,
+        "y": 48,
+        "w": 12,
+        "h": 3
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_CONIFER_POSTGRES}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_CONIFER_POSTGRES}"
+          },
+          "editorMode": "code",
+          "rawQuery": true,
+          "rawSql": "select coalesce(sum(t.verified_emails),0) as \"Verified emails\" from grafana_reporting.company_scores c left join grafana_reporting.contact_counts t on t.company_id=c.id where ('__all' IN (${company:sqlstring}) OR c.id::text IN (${company:sqlstring})) and ('__all' IN (${tier:sqlstring}) OR c.priority_tier IN (${tier:sqlstring}))",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#56C5A2"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        }
+      }
+    },
+    {
+      "id": 20,
+      "title": "Companies missing contacts",
+      "type": "table",
+      "description": "",
+      "gridPos": {
+        "x": 12,
+        "y": 51,
+        "w": 12,
+        "h": 6
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_CONIFER_POSTGRES}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_CONIFER_POSTGRES}"
+          },
+          "editorMode": "code",
+          "rawQuery": true,
+          "rawSql": "select c.name as \"Company\", c.domain as \"Domain\", c.icp_score as \"ICP score\", c.priority_tier as \"Tier\" from grafana_reporting.company_scores c left join grafana_reporting.contact_counts t on t.company_id=c.id where ('__all' IN (${company:sqlstring}) OR c.id::text IN (${company:sqlstring})) and ('__all' IN (${tier:sqlstring}) OR c.priority_tier IN (${tier:sqlstring})) and coalesce(t.contacts,0)=0 order by c.icp_score desc nulls last,c.name",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#56C5A2"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "id": 21,
+      "type": "row",
+      "title": "Campaign Performance",
+      "gridPos": {
+        "x": 0,
+        "y": 57,
+        "w": 24,
+        "h": 1
+      },
+      "collapsed": false,
+      "panels": []
+    },
+    {
+      "id": 22,
+      "title": "Campaign overview",
+      "type": "table",
+      "description": "Record counts are all-time for selected campaigns.",
+      "gridPos": {
+        "x": 0,
+        "y": 58,
+        "w": 16,
+        "h": 7
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_CONIFER_POSTGRES}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_CONIFER_POSTGRES}"
+          },
+          "editorMode": "code",
+          "rawQuery": true,
+          "rawSql": "select k.name as \"Campaign\", k.platform as \"Platform\", k.channel as \"Channel\", k.status as \"Status\", k.created_at as \"Created\", k.recorded_activities as \"Recorded activities\" from grafana_reporting.campaign_summary k where ('__all' IN (${campaign:sqlstring}) OR k.id::text IN (${campaign:sqlstring})) order by k.created_at desc nulls last,k.id",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#56C5A2"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "showHeader": true
+      }
+    },
+    {
+      "id": 23,
+      "title": "Recorded activity in selected period",
+      "type": "stat",
+      "description": "Counts recorded activity in the selected date range. Zero means no activity was recorded.",
+      "gridPos": {
+        "x": 16,
+        "y": 58,
+        "w": 8,
+        "h": 7
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_CONIFER_POSTGRES}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_CONIFER_POSTGRES}"
+          },
+          "editorMode": "code",
+          "rawQuery": true,
+          "rawSql": "select coalesce(sum(a.activity_count),0) as \"Activities\" from grafana_reporting.activity_summary a join grafana_reporting.campaign_summary k on k.id=a.campaign_id where ('__all' IN (${campaign:sqlstring}) OR k.id::text IN (${campaign:sqlstring})) and $__timeFilter(a.activity_day)",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#56C5A2"
+          },
+          "decimals": 0,
+          "mappings": [
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "No activity recorded",
+                  "color": "#A7B6AC",
+                  "index": 0
+                }
+              }
+            }
+          ]
+        },
+        "overrides": []
+      },
+      "options": {
+        "colorMode": "value",
+        "graphMode": "none",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "values": false
+        }
+      }
+    },
+    {
+      "id": 24,
+      "title": "Activities by status",
+      "type": "barchart",
+      "description": "Uses the dashboard time range.",
+      "gridPos": {
+        "x": 0,
+        "y": 65,
+        "w": 9,
+        "h": 8
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_CONIFER_POSTGRES}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_CONIFER_POSTGRES}"
+          },
+          "editorMode": "code",
+          "rawQuery": true,
+          "rawSql": "select coalesce(a.activity_status,'Unrecorded') as \"Status\", sum(a.activity_count) as \"Activities\" from grafana_reporting.activity_summary a join grafana_reporting.campaign_summary k on k.id=a.campaign_id where ('__all' IN (${campaign:sqlstring}) OR k.id::text IN (${campaign:sqlstring})) and $__timeFilter(a.activity_day) group by 1 order by 2 desc,1",
+          "format": "table"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#56C5A2"
+          },
+          "noValue": "No activity recorded"
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "auto",
+        "showValue": "auto",
+        "legend": {
+          "showLegend": false
+        }
+      }
+    },
+    {
+      "id": 25,
+      "title": "Outreach activity over time",
+      "type": "timeseries",
+      "description": "Daily recorded activity. Days with no records are left blank.",
+      "gridPos": {
+        "x": 9,
+        "y": 65,
+        "w": 15,
+        "h": 8
+      },
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "${DS_CONIFER_POSTGRES}"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "${DS_CONIFER_POSTGRES}"
+          },
+          "editorMode": "code",
+          "rawQuery": true,
+          "rawSql": "select a.activity_day as \"time\", sum(a.activity_count)::double precision as \"Recorded activities\" from grafana_reporting.activity_summary a join grafana_reporting.campaign_summary k on k.id=a.campaign_id where ('__all' IN (${campaign:sqlstring}) OR k.id::text IN (${campaign:sqlstring})) and $__timeFilter(a.activity_day) group by 1 order by 1",
+          "format": "time_series"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "#56C5A2"
+          },
+          "noValue": "No activity recorded",
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 35,
+            "lineWidth": 1
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "showLegend": false
+        },
+        "tooltip": {
+          "mode": "single"
+        }
+      }
+    }
+  ]
+}

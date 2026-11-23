@@ -1,0 +1,36 @@
+# Allow only the audited dashboard publication files.
+*
+!/.gitignore
+!/dashboard.py
+!/requirements.txt
+!/README.md
+!/.streamlit/
+!/.streamlit/config.toml
+
+# Sensitive inputs, credentials, runtime files and data exports
+.env
+.env.*
+*.pem
+*.key
+*.pfx
+*.p12
+*.secret
+*credentials*
+*api_keys*
+secrets.toml
+*.sqlite
+*.sqlite3
+*.db
+*.log
+*.csv
+*.tsv
+*.xlsx
+*.xls
+/output/
+/apis/
+/.venv/
+/.dashboard-venv/
+/.dashboard-runtime/
+/__pycache__/
+
+!/supabase_dashboard.py
